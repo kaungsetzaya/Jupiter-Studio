@@ -204,8 +204,12 @@ const Studio: React.FC = () => {
         setStatusMessage(language === Language.MM ? `အသံသွင်းနေသည်: အပိုင်း ${i + 1}/${segments.length}...` : `Recording segment ${i + 1}/${segments.length}...`);
         
         // 1. Handle Gaps (Video Silence)
-        const gapDuration = seg.startTime - lastVideoEndTime;
-        if (gapDuration > 0.05) {
+        let actualGapDuration = seg.startTime - lastVideoEndTime;
+        if (selectedTone === VoiceTone.MOVIE_RECAP) {
+            actualGapDuration = 0; // Force no gaps for Movie Recap tone
+        }
+        
+        if (actualGapDuration > 0.01) { // Use actualGapDuration here
              const silenceBuf = audioProcessor.createSilence(gapDuration);
              processedSegments.push({ buffer: silenceBuf, startTime: currentAudioTime });
              

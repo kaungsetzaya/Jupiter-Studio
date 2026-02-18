@@ -16,9 +16,9 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onFileSelect, isProcessin
   const t = UI_STRINGS[language];
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-4 px-4">
+    <div className="w-full max-w-[1400px] mx-auto mt-2 md:mt-6 px-2 md:px-6">
       <div 
-        className={`relative border-2 border-dashed rounded-[2rem] p-8 transition-all duration-300 flex flex-row items-center justify-center gap-6 group cursor-pointer
+        className={`relative border-2 border-dashed rounded-[2rem] p-6 md:p-12 transition-all duration-300 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 group cursor-pointer
           ${dragActive 
             ? 'border-brand-500 bg-brand-500/5 shadow-2xl scale-[1.01]' 
             : 'border-slate-300 dark:border-white/10 bg-white dark:bg-dark-900/60 hover:border-brand-500/50 hover:bg-white/80 dark:hover:bg-dark-800 shadow-lg'}
@@ -44,16 +44,16 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onFileSelect, isProcessin
            )}
         </div>
         
-        <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
-          <div className="flex flex-row items-center gap-4 flex-wrap">
-             <h3 className="text-lg font-black text-slate-900 dark:text-white italic tracking-tight whitespace-nowrap">
+        <div className="flex-1 min-w-0 flex flex-col justify-center text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-3 md:gap-4">
+             <h3 className="text-lg md:text-xl font-black text-slate-900 dark:text-white italic tracking-tight break-words max-w-full">
                 {isProcessing ? t.common.analyzing : t.common.uploadTitle}
              </h3>
              
              {!isProcessing && (
                <>
-                 <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600"></div>
-                 <p className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">
+                 <div className="hidden md:block w-1 h-1 rounded-full bg-slate-300 dark:bg-gray-600 mt-3"></div>
+                 <p className="text-[10px] md:text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest break-words max-w-full italic">
                     {t.common.uploadDesc}
                  </p>
                </>
@@ -63,12 +63,12 @@ const UploadSection: React.FC<UploadSectionProps> = ({ onFileSelect, isProcessin
           <AnimatePresence>
             {isProcessing && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-2 flex items-center gap-3">
-                   <div className="h-1.5 w-32 bg-slate-100 dark:bg-dark-950 rounded-full overflow-hidden">
+                   <div className="h-2 w-48 bg-slate-200 dark:bg-dark-950 rounded-full overflow-hidden shadow-inner">
                      <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: '100%' }}
-                        transition={{ duration: 15, repeat: Infinity }}
-                        className="h-full bg-brand-500" 
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                        className="h-full bg-gradient-to-r from-brand-400 to-brand-600 shadow-[0_0_10px_rgba(249,115,22,0.5)]"
                      />
                    </div>
                    <p className="text-[10px] text-brand-600 dark:text-brand-500 font-bold uppercase tracking-widest whitespace-nowrap">{statusMessage || "Processing..."}</p>

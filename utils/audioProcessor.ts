@@ -76,8 +76,7 @@ export class AudioProcessor {
 
     for (let i = buffer.length - 1; i >= 0; i--) {
       if (Math.abs(channel[i]) > threshold) {
-        const padding = Math.floor(0.25 * buffer.sampleRate);
-        end = Math.min(buffer.length, i + 1 + padding);
+        end = i + 1; // Modified line: no padding, end exactly at last non-silent sample
         break;
       }
     }

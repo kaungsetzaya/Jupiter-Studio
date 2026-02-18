@@ -1,13 +1,22 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { SubtitleSegment, VoiceId, VoiceTone, SocialContent } from "../types";
+import axios from 'axios';
 
-// Safe API Key retrieval
-const getApiKey = () => {
-  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-    return process.env.API_KEY;
+// Cache the API key to avoid repeated network calls
+let cachedApiKey: string | null = null;
+
+// Secure API Key retrieval from backend
+const getApiKey = async (): Promise<string> => {
+  if (cachedApiKey) return cachedApiKey;
+  
+  try {
+    const response = await axios.get('/api/config/apikey');
+    cachedApiKey = response.data.apiKey;
+    return cachedApiKey || "";
+  } catch (error) {
+    console.error("Failed to fetch API key from backend", error);
+    return "";
   }
-  // Fallback for environments where process.env is injected differently or global shim used
-  return (window as any).process?.env?.API_KEY || "";
 };
 
 const decode = (base64: string): Uint8Array => {
@@ -75,7 +84,7 @@ export const optimizeImage = async (file: File): Promise<{data: string, mimeType
       const MAX_WIDTH = 1280; 
       const MAX_HEIGHT = 1280;
       let width = img.width;
-      let height = img.height;
+      height = img.height;
       if (width > height) {
         if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
       } else {
@@ -98,7 +107,7 @@ export const generateSocialContent = async (
   includeTags: boolean,
   lang: string
 ): Promise<SocialContent> => {
-  const apiKey = getApiKey();
+  const apiKey = await getApiKey();
   if (!apiKey) throw new Error("API Key missing.");
   const ai = new GoogleGenAI({ apiKey });
   
@@ -150,7 +159,7 @@ export const generateSocialContent = async (
 };
 
 export const analyzeAndTranslateVideo = async (base64Data: string, mimeType: string): Promise<SubtitleSegment[]> => {
-  const apiKey = getApiKey();
+  const apiKey = await getApiKey();
   if (!apiKey) throw new Error("API Key missing.");
   const ai = new GoogleGenAI({ apiKey });
   
@@ -233,7 +242,7 @@ export const analyzeAndTranslateVideo = async (base64Data: string, mimeType: str
 };
 
 export const generateSegmentAudio = async (text: string, voice: VoiceId, tone: VoiceTone, onCooldown?: (wait: number) => void): Promise<ArrayBuffer> => {
-  const apiKey = getApiKey();
+  const apiKey = await getApiKey();
   if (!apiKey) throw new Error("API Key missing.");
   const ai = new GoogleGenAI({ apiKey });
   
@@ -365,7 +374,7 @@ export const generateThumbnail = async (
   typography?: { fontVibe: string, textColor: string, styleRefs: {data: string, mimeType: string}[] },
   platform: string = "YouTube"
 ): Promise<string> => {
-  const apiKey = getApiKey();
+  const apiKey = await getApiKey();
   if (!apiKey) throw new Error("API Key missing.");
   const ai = new GoogleGenAI({ apiKey });
   
@@ -395,8 +404,8 @@ export const generateThumbnail = async (
       config: { imageConfig: { aspectRatio: aspectRatio as any, imageSize: "1K" } }
     });
     
-    for (const part of response.candidates?.[0]?.content?.parts || []) { 
-        if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`; 
+    for (const part of response.candidates?.[0]?.content?.parts || []) {
+        if (part.inlineData) return `data:image/png;base64,${part.inlineData.data}`;
     }
     throw new Error("No image data returned from API.");
   } catch (error: any) {
@@ -407,7 +416,7 @@ export const generateThumbnail = async (
 };
 
 export const generateVideoSummary = async (base64Data: string, mimeType: string): Promise<string> => {
-  const apiKey = getApiKey();
+  const apiKey = await getApiKey();
   if (!apiKey) throw new Error("API Key missing.");
   const ai = new GoogleGenAI({ apiKey });
   const prompt = "Summarize the key events in this video in 3 concise sentences.";
@@ -444,7 +453,7 @@ export const transcribeToSRT = async (
   sourceLang: string = 'Auto', 
   targetLang: string | null = null
 ): Promise<TranscribeResult> => {
-  const apiKey = getApiKey();
+  const apiKey = await getApiKey();
   if (!apiKey) throw new Error("API Key missing.");
   const ai = new GoogleGenAI({ apiKey });
   

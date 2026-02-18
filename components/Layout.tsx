@@ -60,8 +60,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentMode, setMode, hasApiK
 
       {/* Sidebar - Responsive */}
       <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-[280px] lg:w-[300px] bg-[var(--bg-surface)] border-r border-slate-200 dark:border-white/10 
-        flex flex-col shrink-0 transition-transform duration-300 ease-out lg:translate-x-0 shadow-2xl lg:shadow-none
+        fixed lg:static inset-y-0 left-0 z-50 w-[280px] lg:w-[320px] bg-[var(--bg-surface)] border-r border-slate-200 dark:border-white/10 
+        flex flex-col shrink-0 transition-transform duration-500 ease-in-out lg:translate-x-0 shadow-2xl lg:shadow-none
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="p-6 md:p-8 flex items-center justify-between gap-3.5">
@@ -164,9 +164,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentMode, setMode, hasApiK
           </div>
         </header>
 
-        <div className="p-4 md:p-8 flex-1 bg-[var(--bg-main)]">
+        <div className="p-4 md:p-6 lg:p-10 flex-1 bg-[var(--bg-main)]">
           <AnimatePresence mode="wait">
-            <motion.div key={currentMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-7xl mx-auto w-full">
+            <motion.div key={currentMode} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-[1600px] mx-auto w-full">
               {children}
             </motion.div>
           </AnimatePresence>

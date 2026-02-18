@@ -259,8 +259,8 @@ const ResultSection: React.FC<ResultSectionProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto pb-20 px-4">
-      <div className="text-center mb-12">
+    <div className="max-w-[1500px] mx-auto pb-20 px-2 md:px-6">
+      <div className="text-center mb-8 md:mb-12">
         <h2 className="text-6xl font-black text-slate-900 dark:text-white mb-3 tracking-tighter italic">
           {language === Language.MM ? "ရလဒ် စစ်ဆေးရန်" : "Studio Result"}
         </h2>

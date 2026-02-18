@@ -23,8 +23,8 @@ const EditorSection: React.FC<EditorSectionProps> = ({ segments, setSegments, on
   };
 
   return (
-    <div className="w-full space-y-8">
-      <div className="flex justify-between items-center bg-white dark:bg-dark-900 border border-slate-200 dark:border-white/5 p-8 rounded-[2.5rem] sticky top-24 z-30 shadow-2xl backdrop-blur-3xl transition-colors">
+    <div className="w-full max-w-[1400px] mx-auto space-y-6 md:space-y-10 px-2 md:px-6">
+      <div className="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-dark-900 border border-slate-200 dark:border-white/5 p-6 md:p-10 rounded-[2.5rem] sticky top-20 z-30 shadow-2xl backdrop-blur-3xl transition-all gap-6">
         <div className="flex flex-col">
           <h2 className="text-2xl font-black text-slate-900 dark:text-white italic tracking-tight">{language === Language.MM ? "စာတန်းထိုး ပြင်ဆင်ရန်" : "Timeline Editor"}</h2>
           <p className="text-[12px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-[0.15em]">{language === Language.MM ? "စာသားများကို လိုအပ်သလို ပြင်ဆင်နိုင်ပါသည်" : "Fine-tune your localization"}</p>
@@ -62,30 +62,36 @@ const EditorSection: React.FC<EditorSectionProps> = ({ segments, setSegments, on
         {segments.map((seg, idx) => (
           <motion.div 
             key={seg.id} 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
-            className="flex flex-col md:flex-row gap-10 bg-white dark:bg-dark-900/60 border border-slate-200 dark:border-white/5 p-10 rounded-[3rem] items-start hover:border-brand-500/30 transition-all group shadow-xl"
+            className="flex flex-col lg:flex-row gap-6 lg:gap-12 bg-white dark:bg-dark-900/60 border border-slate-200 dark:border-white/5 p-6 md:p-12 rounded-[2.5rem] lg:rounded-[3.5rem] items-start hover:border-brand-500/30 transition-all group shadow-xl shadow-black/5"
           >
-            <div className="shrink-0 space-y-3">
-               <div className="w-24 bg-brand-500/10 border border-brand-500/20 px-4 py-3 rounded-xl text-brand-600 dark:text-brand-400 text-[13px] font-black font-mono text-center shadow-inner">
+            <div className="flex flex-row lg:flex-col items-center lg:items-start gap-4 shrink-0 w-full lg:w-32 border-b lg:border-b-0 lg:border-r border-slate-100 dark:border-white/5 pb-4 lg:pb-0 lg:pr-8">
+               <div className="w-24 bg-brand-500/10 border border-brand-500/20 px-4 py-3 rounded-xl text-brand-600 dark:text-brand-400 text-[14px] font-black font-mono text-center shadow-inner">
                  {seg.startTime.toFixed(2)}s
                </div>
-               <p className="text-[11px] text-slate-400 dark:text-gray-600 font-black uppercase tracking-tighter text-center">{language === Language.MM ? "စတင်ချိန်" : "Start Time"}</p>
+               <p className="text-[10px] text-slate-400 dark:text-gray-600 font-black uppercase tracking-widest">{language === Language.MM ? "စတင်ချိန်" : "Start"}</p>
             </div>
 
-            <div className="flex-1 space-y-8 w-full">
+            <div className="flex-1 space-y-6 md:space-y-10 w-full lg:pl-4">
               <div className="space-y-3">
-                <span className="text-[12px] font-black uppercase tracking-[0.1em] text-slate-400 dark:text-gray-500">{language === Language.MM ? "မူရင်းစာသား" : "Source Audio Text"}</span>
-                <p className="text-[15px] font-medium text-slate-600 dark:text-gray-400 italic bg-slate-50 dark:bg-white/5 p-5 rounded-2xl border border-slate-200 dark:border-white/5">{seg.originalText}</p>
+                <span className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400 dark:text-gray-500 flex items-center gap-2">
+                   <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-gray-700"></div>
+                   {language === Language.MM ? "မူရင်းစာသား" : "Source Audio"}
+                </span>
+                <p className="text-base md:text-lg font-medium text-slate-600 dark:text-gray-400 italic bg-slate-50 dark:bg-white/5 p-5 md:p-8 rounded-2xl border border-slate-200 dark:border-white/5">{seg.originalText}</p>
               </div>
 
               <div className="space-y-3">
-                <span className="text-[12px] font-black uppercase tracking-[0.1em] text-brand-600 dark:text-brand-400">{language === Language.MM ? "ဘာသာပြန်စာသား" : "Localized Burmese"}</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.15em] text-brand-600 dark:text-brand-400 flex items-center gap-2">
+                   <div className="w-1.5 h-1.5 rounded-full bg-brand-500"></div>
+                   {language === Language.MM ? "ဘာသာပြန်စာသား" : "Localization"}
+                </span>
                 <textarea 
                   value={seg.translatedText}
                   onChange={(e) => setSegments(prev => prev.map(s => s.id === seg.id ? { ...s, translatedText: e.target.value } : s))}
-                  className="w-full bg-slate-50 dark:bg-dark-950/50 border border-slate-200 dark:border-white/10 text-2xl font-myanmar text-slate-900 dark:text-white rounded-2xl p-8 outline-none focus:border-brand-500 transition-all resize-none leading-relaxed shadow-inner"
+                  className="w-full bg-slate-50 dark:bg-dark-950/50 border border-slate-200 dark:border-white/10 text-xl md:text-3xl font-myanmar text-slate-900 dark:text-white rounded-2xl p-6 md:p-10 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all resize-none leading-relaxed shadow-inner"
                   rows={2}
                 />
               </div>

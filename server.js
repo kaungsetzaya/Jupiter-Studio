@@ -21,6 +21,16 @@ const JWT_SECRET = process.env.JWT_SECRET || 'jupiter_secret_key_change_this';
 app.use(cors());
 app.use(express.json());
 
+// Add Security Headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  // HSTS is typically handled by HTTPS server config, but can be set here if confident in HTTPS setup.
+  // res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload'); 
+  next();
+});
+
 // Database Connection
 // Note: In a pure frontend preview environment without a local MongoDB, this might fail.
 // We add a catch block to prevent the server from crashing immediately, though API routes will fail.
@@ -94,12 +104,17 @@ app.get('/api/admin/users', async (req, res) => {
   }
 });
 
+// Secure endpoint to provide API Key to frontend
+app.get('/api/config/apikey', (req, res) => {
+  res.json({ apiKey: process.env.VITE_API_KEY });
+});
+
 // Serve Static Files (Frontend)
 // This handles the case where users run 'node server.js' and expect to see the app
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // SPA Fallback: For any route not handled by API, serve index.html
-app.get('*', (req, res) => {
+app.get(/^\/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 

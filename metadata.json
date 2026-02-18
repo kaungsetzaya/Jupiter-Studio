@@ -1,0 +1,8 @@
+{
+  "name": "Jupiter AI Studio",
+  "description": "A premium AI-powered video localization tool that translates video content into Burmese, offers precise subtitle editing, generates synchronized professional voiceovers, and designs high-impact YouTube thumbnails.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

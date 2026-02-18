@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jupiter AI Studio | Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+      window.process = window.process || { env: { API_KEY: '', NODE_ENV: 'development' } };
+      
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Plus Jakarta Sans', 'sans-serif'],
+              myanmar: ['Padauk', 'sans-serif'],
+            },
+            colors: {
+              brand: { 50: '#fff7ed', 100: '#ffedd5', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 900: '#7c2d12', cyan: '#22d3ee' },
+              dark: { 800: '#1e1e2e', 900: '#0f0f16', 950: '#050508' }
+            },
+            animation: { 'float': 'float 6s ease-in-out infinite', 'shimmer': 'shimmer 2s linear infinite' },
+            keyframes: {
+              float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-15px)' } },
+              shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } }
+            }
+          }
+        }
+      };
+    </script>
+
+    <style>
+      :root { --bg-main: #f1f5f9; --bg-surface: #ffffff; --bg-dim: #e2e8f0; --text-main: #0f172a; --text-muted: #64748b; --border-main: #e2e8f0; --glass-bg: rgba(255,255,255,0.9); }
+      .dark { --bg-main: #050508; --bg-surface: #0f0f16; --bg-dim: #1e1e2e; --text-main: #e2e8f0; --text-muted: #94a3b8; --border-main: rgba(255,255,255,0.1); --glass-bg: rgba(15,15,22,0.7); }
+      body { background-color: var(--bg-main); color: var(--text-main); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+      .jupiter-glass { background: var(--glass-bg); backdrop-filter: blur(24px); border: 1px solid var(--border-main); }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.5); border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(249,115,22,0.8); }
+      .font-myanmar { font-family: 'Padauk', sans-serif; }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
+    "framer-motion": "https://esm.sh/framer-motion@^12.34.1",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "axios": "https://esm.sh/axios@^1.13.5",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "path": "https://esm.sh/path@^0.12.7",
+    "url": "https://esm.sh/url@^0.11.4",
+    "express": "https://esm.sh/express@^5.2.1",
+    "mongoose": "https://esm.sh/mongoose@^9.2.1",
+    "cors": "https://esm.sh/cors@^2.8.6",
+    "dotenv": "https://esm.sh/dotenv@^17.3.1",
+    "jsonwebtoken": "https://esm.sh/jsonwebtoken@^9.0.3",
+    "bcryptjs": "https://esm.sh/bcryptjs@^3.0.3"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
+</html>

@@ -1,20 +1,48 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Jupiter Studio
 
-# Run and deploy your AI Studio app
+Jupiter Studio is a powerful, AI-driven multimedia processing suite designed to streamline content creation workflows. From AI-powered SRT subtitle generation to voice synthesis and thumbnail creation, Jupiter Studio empowers creators to automate their video production process.
 
-This contains everything you need to run your app locally.
+## 🚀 Key Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1JBIacz0Zh0_XIgpeMFLNbRhJ_J_d8Yj2
+*   **AI SRT Generation:** Automatically transcribe video content and generate accurate SRT subtitle files.
+*   **AI Voice Synthesis:** Convert text into high-quality, natural-sounding voiceovers.
+*   **Thumbnail Generation:** Generate engaging thumbnails for your video projects.
+*   **AI Studio Integration:** Seamlessly bridge your workflows with Google's Gemini models.
+*   **Multimedia Suite:** A centralized hub for managing your video, audio, and subtitle assets.
 
-## Run Locally
+## 🛠 Prerequisites
 
-**Prerequisites:**  Node.js
+*   Node.js (v18 or higher recommended)
+*   Google Gemini API Key
 
+## 💻 Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/kaungsetzaya/Jupiter-Studio.git
+    cd Jupiter-Studio
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Setup:**
+    Create a `.env.local` file in the root directory and add your API key:
+    ```env
+    GEMINI_API_KEY=your_actual_api_key_here
+    ```
+
+4.  **Run the application:**
+    ```bash
+    npm run dev
+    ```
+
+## 🤝 Contributing
+
+We welcome contributions! Whether it's adding new features, improving the UI, or fixing bugs, please feel free to fork this repository and submit a Pull Request.
+
+## 🛡 License
+
+This project is open-source and available under the MIT License.

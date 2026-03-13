@@ -91,7 +91,7 @@ const EditorSection: React.FC<EditorSectionProps> = ({ segments, setSegments, on
                 <textarea 
                   value={seg.translatedText}
                   onChange={(e) => setSegments(prev => prev.map(s => s.id === seg.id ? { ...s, translatedText: e.target.value } : s))}
-                  className="w-full bg-slate-50 dark:bg-dark-950/50 border border-slate-200 dark:border-white/10 text-xl md:text-3xl font-myanmar text-slate-900 dark:text-white rounded-2xl p-6 md:p-10 outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all resize-none leading-relaxed shadow-inner"
+                  className="w-full bg-slate-50 dark:bg-dark-950/50 border border-slate-200 dark:border-white/10 text-base md:text-xl font-myanmar text-slate-900 dark:text-white rounded-2xl p-6 md:p-8 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 transition-all resize-none leading-relaxed shadow-inner"
                   rows={2}
                 />
               </div>

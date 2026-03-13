@@ -19,7 +19,11 @@ export enum AppStep {
 
 export enum Language {
   EN = 'EN',
-  MM = 'MM'
+  MM = 'MM',
+  TH = 'TH',
+  ID = 'ID',
+  JA = 'JA',
+  KO = 'KO'
 }
 
 export interface SubtitleSegment {

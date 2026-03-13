@@ -84,7 +84,7 @@ export const optimizeImage = async (file: File): Promise<{data: string, mimeType
       const MAX_WIDTH = 1280; 
       const MAX_HEIGHT = 1280;
       let width = img.width;
-      height = img.height;
+      let height = img.height;
       if (width > height) {
         if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
       } else {
@@ -158,6 +158,12 @@ export const generateSocialContent = async (
   return { title: "", caption: "", hashtags: [] };
 };
 
+/**
+ * Analyzes video/audio content using Gemini and translates it to natural Burmese.
+ * @param base64Data - Video/Audio data in base64 format
+ * @param mimeType - The mime type of the media (e.g., video/mp4)
+ * @returns Promise<SubtitleSegment[]> - List of segments with original and translated text
+ */
 export const analyzeAndTranslateVideo = async (base64Data: string, mimeType: string): Promise<SubtitleSegment[]> => {
   const apiKey = await getApiKey();
   if (!apiKey) throw new Error("API Key missing.");
@@ -172,26 +178,13 @@ export const analyzeAndTranslateVideo = async (base64Data: string, mimeType: str
     1. **SPOKEN STYLE (အပြောစကား)**: Use natural, conversational Burmese.
        - STRICTLY AVOID formal literary style (စာစကား).
        - Example: Use "မသိဘူး" (Conversational) instead of "မသိရှိပါ" (Formal).
-       - Example: Use "လုပ်နေတယ်" instead of "ဆောင်ရွက်လျက်ရှိသည်".
     2. **EMOTION & PARTICLES**: Capture the speaker's tone using sentence-ending particles.
-       - Use 'ကွ', 'ဗျာ', 'နော်', 'ရှင့်', 'လေ' where appropriate to match the energy.
-    3. **IDIOMS**: Translate the *meaning*, not the literal words.
-    4. **DUBBING FLOW**: Sentences must flow smoothly when spoken aloud. 
-    5. **COMPLETENESS**: Transcribe and translate EVERY sentence.
+    3. **IDIOMS**: Translate the meaning, not the literal words.
+    4. **DUBBING FLOW**: Sentences must flow smoothly. 
 
     OUTPUT FORMAT: JSON Array
-    [ 
-      { 
-        "id": "1", 
-        "startTime": 0.0, 
-        "endTime": 2.5, 
-        "originalText": "Hello everyone", 
-        "translatedText": "အားလုံးပဲ မင်္ဂလာပါ" 
-      } 
-    ]
   `;
 
-  // Use Gemini 3 Flash Preview as primary (High Limit), fallback to 2.5 Flash Latest
   const models = ['gemini-3-flash-preview', 'gemini-2.5-flash-latest'];
 
   for (const model of models) {
@@ -218,7 +211,6 @@ export const analyzeAndTranslateVideo = async (base64Data: string, mimeType: str
         }
       });
       const parsed = JSON.parse(response.text || "[]");
-      // Sanitize input to prevent crashes
       return parsed.map((item: any) => ({
         id: item.id || Math.random().toString(),
         startTime: typeof item.startTime === 'number' ? item.startTime : 0,
@@ -230,10 +222,7 @@ export const analyzeAndTranslateVideo = async (base64Data: string, mimeType: str
       if (error.message?.includes("Requested entity was not found.") && (window as any).aistudio?.openSelectKey) {
         await (window as any).aistudio.openSelectKey();
       }
-      if (isQuotaError(error) && model !== models[models.length - 1]) {
-        console.warn(`Quota exceeded for ${model} in VideoAnalysis, switching to next model...`);
-        continue;
-      }
+      if (isQuotaError(error) && model !== models[models.length - 1]) continue;
       handleGeminiError(error, "Video Translation");
       return [];
     }

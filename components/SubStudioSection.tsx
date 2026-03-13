@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { transcribeToSRT, fileToGenerativePart } from '../services/geminiService';
 import { parseSRT } from '../utils/srtParser';
@@ -20,7 +19,7 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
   // Box Settings
   const [isBlurActive, setIsBlurActive] = useState(true);
   const [blurAmount, setBlurAmount] = useState(16);
-  const [fontSize, setFontSize] = useState(24);
+  const [fontSize, setFontSize] = useState(18);
   
   // Position State (Percentages)
   const [boxState, setBoxState] = useState({ x: 10, y: 75, w: 80, h: 15 });
@@ -34,6 +33,14 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
   const timelineRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Update box state with validation
+  const updateBox = (key: keyof typeof boxState, val: number) => {
+    setBoxState(prev => ({
+      ...prev,
+      [key]: Math.max(0, Math.min(100, val))
+    }));
+  };
+
   const handleFile = async (selectedFile: File) => {
     setFile(selectedFile);
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -46,10 +53,7 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
       const generativePart = await fileToGenerativePart(selectedFile);
       const mimeType = selectedFile.type || generativePart.mimeType || 'video/mp4';
       
-      // AUTOMATICALLY TRANSLATE TO MYANMAR
       const srtResult = await transcribeToSRT(generativePart.data, mimeType, '16:9', 'Auto', 'Myanmar');
-      
-      // Use translated text if available, otherwise original
       const textToUse = srtResult.translated || srtResult.original;
       const parsed = parseSRT(textToUse);
       
@@ -78,7 +82,6 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
   };
 
   // --- Robust Drag & Resize Logic ---
-
   const handleMouseDown = (e: React.MouseEvent, mode: 'MOVE' | 'RESIZE') => {
     e.stopPropagation();
     e.preventDefault();
@@ -93,7 +96,6 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
     e.preventDefault();
     const rect = containerRef.current.getBoundingClientRect();
     
-    // Calculate delta in percentages
     const deltaX = ((e.clientX - startPos.x) / rect.width) * 100;
     const deltaY = ((e.clientY - startPos.y) / rect.height) * 100;
 
@@ -101,7 +103,6 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
       let newX = startBox.x + deltaX;
       let newY = startBox.y + deltaY;
 
-      // Constrain to container
       newX = Math.max(0, Math.min(100 - startBox.w, newX));
       newY = Math.max(0, Math.min(100 - startBox.h, newY));
 
@@ -110,7 +111,6 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
       let newW = startBox.w + deltaX;
       let newH = startBox.h + deltaY;
 
-      // Minimum size constraints (5%)
       newW = Math.max(5, Math.min(100 - startBox.x, newW));
       newH = Math.max(5, Math.min(100 - startBox.y, newH));
 
@@ -183,7 +183,7 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
                 <video 
                   ref={videoRef}
                   src={videoUrl} 
-                  className="w-full h-full object-contain pointer-events-none"
+                  className="w-full h-full object-cover"
                   onTimeUpdate={onTimeUpdate}
                   controls={false}
                 />
@@ -202,7 +202,7 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
                    ${dragMode !== 'NONE' ? 'cursor-grabbing' : 'cursor-grab'}
                 `}
               >
-                 {/* Visual Border (Only shows on hover or active) */}
+                 {/* Visual Border */}
                  <div className="absolute inset-0 border-2 border-brand-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)] rounded-lg pointer-events-none opacity-50 group-hover/box:opacity-100 transition-opacity" />
 
                  {/* The Blur Layer */}
@@ -223,7 +223,7 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
                     <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 19L5 5" /></svg>
                  </div>
 
-                 {/* THE SUBTITLE TEXT (Inside the box) */}
+                 {/* THE SUBTITLE TEXT */}
                  <div className="absolute inset-0 flex items-center justify-center p-2 z-10 pointer-events-none">
                     <AnimatePresence mode="wait">
                         {activeSub && (
@@ -244,6 +244,21 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
                         )}
                     </AnimatePresence>
                  </div>
+              </div>
+
+              {/* Precise Position Controls */}
+              <div className="absolute top-4 right-4 z-50 bg-black/50 p-3 rounded-xl backdrop-blur-md border border-white/10 grid grid-cols-2 gap-2">
+                 {['x', 'y', 'w', 'h'].map((key) => (
+                    <div key={key}>
+                       <label className="text-[8px] font-black uppercase text-white/50">{key.toUpperCase()}</label>
+                       <input 
+                         type="number" 
+                         value={Math.round(boxState[key as keyof typeof boxState])}
+                         onChange={(e) => updateBox(key as keyof typeof boxState, parseInt(e.target.value))}
+                         className="w-16 bg-black/50 text-white rounded-lg p-1 text-center text-[10px] font-bold border border-white/10 outline-none focus:border-brand-500"
+                       />
+                    </div>
+                 ))}
               </div>
 
               {/* Video Controls Overlay */}
@@ -273,7 +288,6 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
 
             {/* Controls */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Blur Control */}
               <div className="bg-white dark:bg-dark-800/40 p-6 rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6 shadow-xl backdrop-blur-md transition-colors">
                  <div className="flex justify-between items-center">
                     <div className="flex flex-col">
@@ -287,7 +301,6 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
                        <motion.div animate={{ x: isBlurActive ? 30 : 4 }} className="w-5 h-5 bg-white rounded-full mt-1 shadow-md" />
                     </button>
                  </div>
-                 
                  <div className="space-y-2">
                     <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 dark:text-gray-500">
                        <span>{t.subStudio.blurPower}</span>
@@ -297,7 +310,6 @@ const SubStudioSection: React.FC<{ language: Language }> = ({ language }) => {
                  </div>
               </div>
 
-              {/* Font Size Control (New) */}
               <div className="bg-white dark:bg-dark-800/40 p-6 rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6 shadow-xl backdrop-blur-md transition-colors">
                  <h4 className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-500 tracking-widest">{language === Language.MM ? "စာလုံးအရွယ်အစား" : "Font Size"}</h4>
                  <div className="space-y-4">

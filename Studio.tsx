@@ -203,26 +203,23 @@ const Studio: React.FC = () => {
         setGenProgress({ current: i + 1, total: segments.length });
         setStatusMessage(language === Language.MM ? `အသံသွင်းနေသည်: အပိုင်း ${i + 1}/${segments.length}...` : `Recording segment ${i + 1}/${segments.length}...`);
         
-        // 1. Handle Gaps (Video Silence)
-        let actualGapDuration = seg.startTime - lastVideoEndTime;
-        if (selectedTone === VoiceTone.MOVIE_RECAP) {
-            actualGapDuration = 0; // Force no gaps for Movie Recap tone
-        }
+        // 1. Handle Gaps (Video Silence) - Force continuous speech
+        const actualGapDuration = 0; 
         
-        if (actualGapDuration > 0.01) { // Use actualGapDuration here
-             const silenceBuf = audioProcessor.createSilence(gapDuration);
+        if (actualGapDuration > 0.01) { 
+             const silenceBuf = audioProcessor.createSilence(actualGapDuration);
              processedSegments.push({ buffer: silenceBuf, startTime: currentAudioTime });
              
              newSyncData.push({
                  segmentId: `gap_${i}`,
                  audioStart: currentAudioTime,
-                 audioEnd: currentAudioTime + gapDuration,
+                 audioEnd: currentAudioTime + actualGapDuration,
                  videoStart: lastVideoEndTime,
                  videoEnd: seg.startTime,
                  playbackRate: 1.0
              });
              
-             currentAudioTime += gapDuration;
+             currentAudioTime += actualGapDuration;
         }
 
         // 2. Generate Segment Audio
@@ -241,46 +238,26 @@ const Studio: React.FC = () => {
           }
         }
 
+        // 3. Sync Logic - Force fit to video segment duration with pitch protection
         const videoSegDuration = seg.endTime - seg.startTime;
-        const audioSegDuration = segmentBuffer.duration;
-
-        // 3. Sync Logic
-        if (forceSync) {
-            // SMART VIDEO SYNC (VFR):
-            // Calculate playback rate. Use max(0.1, duration) to avoid division by zero.
-            const safeAudioDuration = Math.max(0.1, audioSegDuration);
-            const playbackRate = videoSegDuration / safeAudioDuration;
-            
-            processedSegments.push({ buffer: segmentBuffer, startTime: currentAudioTime });
-            
-            newSyncData.push({
-                segmentId: seg.id,
-                audioStart: currentAudioTime,
-                audioEnd: currentAudioTime + audioSegDuration,
-                videoStart: seg.startTime,
-                videoEnd: seg.endTime,
-                playbackRate: playbackRate
-            });
-            
-            currentAudioTime += audioSegDuration;
-
-        } else {
-            // CLASSIC MODE (Audio Stretch):
-            const stretchedBuffer = await audioProcessor.stretchToFit(segmentBuffer, videoSegDuration);
-            
-            processedSegments.push({ buffer: stretchedBuffer, startTime: currentAudioTime });
-            
-            newSyncData.push({
-                segmentId: seg.id,
-                audioStart: currentAudioTime,
-                audioEnd: currentAudioTime + videoSegDuration,
-                videoStart: seg.startTime,
-                videoEnd: seg.endTime,
-                playbackRate: 1.0
-            });
-
-            currentAudioTime += videoSegDuration;
-        }
+        const naturalSpeed = segmentBuffer.duration / videoSegDuration;
+        
+        // Cap speed at 1.25 to prevent chipmunk effect
+        const speed = Math.min(naturalSpeed, 1.25);
+        const stretchedBuffer = await audioProcessor.stretchBuffer(segmentBuffer, speed);
+        
+        processedSegments.push({ buffer: stretchedBuffer, startTime: currentAudioTime });
+        
+        newSyncData.push({
+            segmentId: seg.id,
+            audioStart: currentAudioTime,
+            audioEnd: currentAudioTime + stretchedBuffer.duration,
+            videoStart: seg.startTime,
+            videoEnd: seg.endTime,
+            playbackRate: speed
+        });
+        
+        currentAudioTime += stretchedBuffer.duration;
 
         lastVideoEndTime = seg.endTime;
         
